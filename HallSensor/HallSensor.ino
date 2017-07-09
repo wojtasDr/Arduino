@@ -3,6 +3,7 @@ unsigned long lastmillis = 0;
 unsigned long measurementCounter = 0;
 float velocity = 0;
 float velocityAvg = 0;
+char startStop;
 void setup()
 {
   Serial.begin(9600);
@@ -12,36 +13,26 @@ void setup()
 
 void loop()
 {
-  if (millis() - lastmillis == 1000){
-    detachInterrupt(0);
+  if (Serial.available())  {
+    startStop = Serial.read();
+  }
 
-//    velocity = revolutions *2.1 * 3.6;
-//    
-//    if(measurementCounter  > 10){
-//      measurementCounter = 1;
-//    }
-//
-//    if(velocity !=0){
-//      measurementCounter++;
-//
-//      velocityAvg = (velocityAvg + velocity) / measurementCounter;
-//    }
-    Serial.print("S1:");
-    Serial.println(revolutions); 
-   // Serial.write(revolutions);
-   // Serial.write("\n");
-//    Serial.print("\t V[km/h]=\t");
-//    Serial.print(velocity); 
-//    Serial.print("\t MCounter=\t");
-//    Serial.print(measurementCounter); 
-//    Serial.print("\t Vacg[km/h]=\t");
-//    Serial.println(velocityAvg); 
-    
-//    velocity = 0;
-    revolutions = 0; // Restart the RPM counter
-    lastmillis = millis(); // Uptade lasmillis
+  if (startStop == 'T') {
+    if (millis() - lastmillis == 1000 || millis() - lastmillis == 1001){
+        detachInterrupt(0);
 
-    attachInterrupt(0, incrementRevolutions, FALLING);
+        Serial.print("S1:");
+        Serial.println(revolutions); 
+
+        revolutions = 0; // Restart the RPM counter
+        lastmillis = millis(); // Uptade lasmillis
+
+        attachInterrupt(0, incrementRevolutions, FALLING);
+    }else if (millis() - lastmillis > 1000) {
+        Serial.println(millis() - lastmillis);
+    }
+  } else {
+    lastmillis = millis();
   }
 }
 
