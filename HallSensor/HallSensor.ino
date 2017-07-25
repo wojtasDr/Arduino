@@ -33,6 +33,7 @@ void loop()
     }
   } else {
     lastmillis = millis();
+    revolutions = 0;
   }
 }
 
